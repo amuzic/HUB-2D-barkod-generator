@@ -1,0 +1,132 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="description" content="Besplatni 2D barkod generator za uplatnice" />
+    <title>MATEVA - 2D BARKOD GENERATOR</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+	
+	<script src="script.js" type="text/javascript"></script>
+	<script src="pdf417.js" type="text/javascript"></script>
+	<script src="bcmath-min.js" type="text/javascript"></script>
+	  <!-- Link to the favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- For modern formats -->
+    <link rel="icon" href="favicon.png" type="image/png">
+</head>
+
+<body>
+    <div class="container">
+		<div class="header">
+			<h1>2D barkod generator</h1>
+			<img class="image-button" onclick="showModal()"src="information-icon.png"/>
+		</div>
+        <form id="barcode-form">
+			 <div class="button-container">
+                <button type="button" class="button" onclick="saveMyData(this)" alt="Sprema podatke u vaš lokalni browser">Spremi moje podatke</button>
+				<button type="button" class="button" onclick="loadFromLocalStorage()">Učitaj moje podatke</button>
+                <button type="button" class="button" onclick="clearForm()">Očisti formu</button>
+                <button type="button" class="button" onclick="clearLocalStorage()">Obriši moje podatke</button>
+				
+			</div>
+			<div class="group">
+				<div class="form-group">
+					<label for="line5">Primatelj - ime</label>
+					<input type="text" id="line5" name="line5" class="input-field" maxlength="20">
+				</div>
+
+				<div class="form-group">
+					<label for="line6">Primatelj - adresa</label>
+					<input type="text" id="line6" name="line6" class="input-field" maxlength="20">
+				</div>
+
+				<div class="form-group">
+					<label for="line7">Primatelj - poštanski broj i grad</label>
+					<input type="text" id="line7" name="line7" class="input-field" maxlength="20">
+				</div>
+				
+				<div class="form-group">
+					<label for="line1">Iznos</label>
+					<input type="text" id="line1" name="line1" class="input-field" maxlength="14">
+				</div>
+
+				<div class="form-group">
+					<label for="line8">IBAN primatelja</label>
+					<input type="text" id="line8" name="line8" class="input-field">
+				</div>
+
+				<div class="form-group">
+					<label for="line9">Model</label>
+					<input type="text" id="line9" name="line9" class="input-field" maxlength="4">
+				</div>
+
+				<div class="form-group">
+					<label for="line10">Poziv na broj</label>
+					<input type="text" id="line10" name="line10" class="input-field" maxlength="20">
+				</div>
+
+				<div class="form-group">
+					<label for="line11">Šifra namjene</label>
+					<input type="text" id="line11" name="line11" class="input-field" maxlength="4">
+				</div>
+
+				<div class="form-group">
+					<label for="line12">Opis plaćanja</label>
+					<input type="text" id="line12" name="line12" class="input-field" maxlength="30">
+				</div>
+			</div>
+			<div class="group">
+
+				<div class="form-group">
+					<label for="line2">Platitelj - ime (i prezime)</label>
+					<input type="text" id="line2" name="line2" class="input-field" maxlength="20">
+				</div>
+
+				<div class="form-group">
+					<label for="line3">Platitelj - adresa</label>
+					<input type="text" id="line3" name="line3" class="input-field" maxlength="20">
+				</div>
+
+				<div class="form-group">
+					<label for="line4">Platitelj - poštanski broj i grad</label>
+					<input type="text" id="line4" name="line4" class="input-field" maxlength="20">
+				</div>
+			</div>
+            <div class="button-container">
+                <button type="button" class="button" onclick="generate()">Generiraj barkod</button>
+				<button type="button" class="button copy" onclick="copyBarcode()">Kopiraj barkod</button>
+				<div class="mobile-info">
+					Ako ste na mobitelu, držite stisnuti barkod i ponudit će vam se opcije za kopiranje, download, share.
+				</div>
+            </div>
+        </form>
+
+		<div id="barcode"></div>
+		<div id="image-container">
+        <!-- Image will be appended here -->
+		</div>
+
+		<div class="footer">
+			<a href="https://mateva.hr">mateva.hr</a>
+			<p>Ako imate kakav prijedlog za dodatne funkcionalnosti pošaljite na <a href="mailto:info@mateva.hr">info@mateva.hr</a>
+		</div>
+    </div>
+	
+	 <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>· 2D barkod generator je pomoćno sredstvo za generiranje barkoda za plaćanje prema HUB specifikaciji. (<a href="https://www.hub.hr/sites/default/files/inline-files/2DBK_EUR_Uputa_1.pdf" target="_blank">specifikacija</a>)</p>
+			<p>· Preporučujem da nakon svakog generiranja provjerite podatke skeniranjem barkoda. <b>Autor nije odgovoran za krivo generirane podatke!</b></p>
+			<p>· "Spremi moje podatke" - sprema podatke o primatelju (ime, adresa, grad, IBAN, ...) koji se trenutno nalaze u formi u lokalnu memoriju vašeg internet preglednika.</p>
+			<p>· "Učitaj moje podatke" - učitava u formu spremljene podatke iz lokalne memorije vašeg internet preglednika ako postoje. Nakon učitavanja potrebno je unijeti preostale podatke i kliknuti na generiranje.</p>
+			<p>· "Očisti formu" - briše trenutne podatke iz forme kako bi mogli unijeti neke nove podatke. Ne briše podatke iz memorije.</p>
+			<p>· "Obriši moje podatke" - briše spremljene podatke iz lokalne memorije vašeg internet preglednika ako postoje.</p>
+			<p>· "Kopiraj barkod" - kopira generirani barkod u clipboard, pa možete samo zalijepiti gdje treba.</p>
+        </div>
+    </div>
+</body>
+
+</html>
